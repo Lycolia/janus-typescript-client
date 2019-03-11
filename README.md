@@ -1,10 +1,10 @@
 # Janus Typescript Client
 
-Wrapper with library and typescript definitions for Janus Gateway Client.
+Wrapped Janus.js by TypeScript.
 
 ## Installation
 
-`yarn add https://github.com/marekhoryna/janus-typescript-client`
+`npm i https://github.com/Lycolia/janus-typescript-client.git`
 
 ## Usage
 
