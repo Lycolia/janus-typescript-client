@@ -1,22 +1,30 @@
 declare class JanusStatic {
-  constructor(options: JanusStatic.IJanusOptions);
+  constructor(options: JanusStatic.JanusOptions);
 
   getServer(): string;
   isConnected(): boolean;
   getSessionId(): string;
-  attach(options: JanusStatic.IJanusPluginOptions): void;
-  destroy(options?: JanusStatic.IJanusDestroyedOptions): void;
+  /**
+   * Janus plugin attach
+   * @param options 
+   */
+  attach(options: JanusStatic.JanusPluginOptions): void;
+  destroy(options?: JanusStatic.JanusDestroyedOptions): void;
 }
 
 declare module JanusStatic {
-  export function init(options: IJanusInitOptions): void;
+  /**
+   * Janus init
+   * @param options Init options
+   */
+  export function init(options: JanusInitOptions): void;
   export function attachMediaStream (element: Element, stream: MediaStream): void;
   export function listDevices(callback: (devices: MediaDeviceInfo[]) => void): void;
   export function isWebrtcSupported(): boolean;
   export function isExtensionEnabled(): boolean;
   export function randomString(length: number): string;
 
-  export interface IJanusOptions {
+  export interface JanusOptions {
     server: string | string[];
     iceServers?: string[];
     ipv6?: boolean;
@@ -31,25 +39,41 @@ declare module JanusStatic {
     destroyed: () => void;
   }
 
-  export interface IJanusInitOptions {
+  export interface JanusInitOptions {
     debug?: boolean;
     callback: Function;
   }
 
-  export interface IJanusDestroyedOptions {
+  export interface JanusDestroyedOptions {
     success: () => void;
     error: (err: string) => void;
   }
 
-  export interface IJanusPluginOptions {
+  export interface JanusPluginOptions {
     plugin: string;
     opaqueId?: string;
 
-    success: (handle: IJanusPluginHandle) => void;
+    /**
+     * Attached succeed
+     * @param handle JanusPluginHandle
+     */
+    success: (handle: JanusPluginHandle) => void;
+    /**
+     * Trap error
+     */
     error: (error: Error) => void;
     consentDialog?: (on?: boolean) => void;
-    onmessage?: (message: IMessage, jsep: any) => void;
+    /**
+     * 
+     * @param message Event Message
+     * @param jsep    Janus SDP
+     */
+    onmessage?: (message: Message, jsep: any) => void;
     onlocalstream?: (stream: any) => void;
+    /**
+     * Get remote stream
+     * @param stream remote stream
+     */
     onremotestream?: (stream: any) => void;
     oncleanup?: () => void;
     detached?: () => void;
@@ -60,36 +84,40 @@ declare module JanusStatic {
     mediaState?: (data: any) => void;
   }
 
-  export interface IMessage {
+  export interface Message {
     id: number;
     private_id: number;
     display: string;
     videoroom: string;
     audiobridge: string;
-    publishers?: IPublisher[];
-    participants?: IParticipant[];
+    publishers?: Publisher[];
+    participants?: Participant[];
     leaving?: number;
     unpublished?: string;
   }
 
-  export interface IPublisher {
+  export interface Publisher {
     id: number;
     display: string;
   }
 
-  export interface IParticipant {
+  export interface Participant {
     id: number;
     display: string;
     muted: boolean;
   }
 
-  export interface IJanusPluginHandle {
+  export interface JanusPluginHandle {
     getId(): string;
     getPlugin(): string;
+    /**
+     * Get bitrate string
+     * @return 'n kbits/sec' | 'Invalid handle' | 'Invalid PeerConnection' | 'Feature unsupported by browser'
+     */
     getBitrate(): string;
     send(parameters: any): void;
-    createOffer(options: ICreateOfferOptions): void;
-    createAnswer(options: IAnswerOfferOptions): void;
+    createOffer(options: CreateOfferOptions): void;
+    createAnswer(options: AnswerOfferOptions): void;
     handleRemoteJsep(callbacks: any): void;
     hangup(sendRequest?: boolean): void;
     detach(): void;
@@ -105,7 +133,7 @@ declare module JanusStatic {
     webrtcStuff: any;
   }
 
-  export interface ICreateOfferOptions {
+  export interface CreateOfferOptions {
     media: {
       audioSend?: boolean;
       audioRecv?: boolean;
@@ -124,7 +152,7 @@ declare module JanusStatic {
     error: (err: Error) => void;
   }
 
-  export interface IAnswerOfferOptions extends ICreateOfferOptions {
+  export interface AnswerOfferOptions extends CreateOfferOptions {
     jsep: string;
   }
 
